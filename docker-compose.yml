@@ -1,0 +1,37 @@
+version: '3.7'
+
+services:
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      default:
+        ipv4_address: 172.18.0.10  # Static IP address for Redis
+
+  mongo:
+    image: mongo:4.4
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    networks:
+      default:
+        ipv4_address: 172.18.0.11  # Static IP address for MongoDB
+
+  worker:
+    build: ./worker
+    container_name: worker
+    depends_on:
+      - mongo
+      - redis
+    networks:
+      default:
+        ipv4_address: 172.18.0.12  # Static IP address for Worker
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
